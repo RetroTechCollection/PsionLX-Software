@@ -4,8 +4,8 @@
 ===============================================================================
 
  Everything the full PsionLX image (../PsionLX/1-IMAGES/psionlx-cf-1gb.img)
- adds to Psion's own image, as packages for Psion's own package manager, so
- a netBook Pro running ANY PsionLX card can install them:
+ adds to Psion's own image, and a Spotify app, as packages for Psion's own
+ package manager, so a netBook Pro running ANY PsionLX card can install them:
 
    Find new software    Psion's own TASKS entry, finished: the catalogue that
                         installs everything below, and a helper that sets
@@ -18,9 +18,9 @@
    Fonts                Psion's Agfa fonts: Albany, Arial Narrow, Cumberland
                         and Thorndale
 
- The full image has all of these already. On every card, "Find new
- software" lives where Psion put it, on the TASKS screen -- the task Psion
- listed in 2005 and never finished.
+ The full image has all of these already except Spotify, which is one
+ Install away. On every card, "Find new software" lives where Psion put it,
+ on the TASKS screen -- the task Psion listed in 2005 and never finished.
 
 
 -------------------------------------------------------------------------------

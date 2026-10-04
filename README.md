@@ -31,7 +31,8 @@ network)*, then on the netBook Pro, in Terminal:
 That installs Find new software -- on the TASKS screen, where Psion put it --
 and a login helper that points Firefox at PsionNet. Programs already on the
 card (from an earlier full image) are put on record, so they show as
-installed. The full PsionLX image has everything already.
+installed. The full PsionLX image has all of it already except Spotify,
+which is one Install away in Find new software.
 
 ## How it works
 
