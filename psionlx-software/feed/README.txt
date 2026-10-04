@@ -54,11 +54,13 @@
     su asks for no password on PsionLX. The installer sets up Psion's
     package manager to fetch from this folder through PsionNet, installs
     "Find new software", and says "Done". The desktop blinks once as
-    Psion's launcher restarts with the TASKS entry working.
+    Psion's launcher restarts with the TASKS entry working. Programs that
+    are on the card already -- from an earlier full image -- are put on
+    record, so they show as installed.
 
  3. Tap TASKS, then Find new software. Pick something and press Install.
-    PsionLX asks for the root password: there is none, so just press OK.
-    New programs appear in PROGRAMS straight away.
+    New programs appear in PROGRAMS straight away. (If you have given
+    PsionLX a root password, it asks for it.)
 
  The installer is install.sh, in this folder. PsionNet puts its own address
  into it as it hands it over. Run any other way -- copied across on a card,
