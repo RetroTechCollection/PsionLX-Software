@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Spotify
+Comment=Your Spotify, played through PsionNet on a Mac
+Exec=psionnet-spotify
+Icon=psionnet-spotify.png
+Terminal=false
+Type=Application
+Categories=Application;AudioVideo;
+StartupNotify=True
+SingleInstance=True

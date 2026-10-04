@@ -1,0 +1,5 @@
+#!/bin/sh
+# PsionLX Software: point Firefox and "Find new software" at PsionNet, if it
+# is on the network. In the background, so the desktop never waits for it.
+[ -x /usr/bin/psionnet-connect ] && /usr/bin/psionnet-connect > /dev/null 2>&1 &
+exit 0

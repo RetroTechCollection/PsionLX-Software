@@ -1,0 +1,51 @@
+#!/bin/sh
+# psionnet-connect -- point this PsionLX machine at PsionNet, if one is on
+# the network. Run at login by /etc/X11/Xsession.d/75psionnet.
+#
+#  * finds PsionNet by broadcast (psionnet-find) and keeps its address in
+#    ~/.psionnet/server, which "Find new software" reads
+#  * writes ~/.psionnet/proxy.pac, a proxy auto-config file: the web goes
+#    through PsionNet, which speaks the modern TLS Firefox 1.0 cannot; local
+#    addresses go direct; and if PsionNet is gone, Firefox goes direct
+#  * points every Firefox profile at that file (user.js). New profiles get it
+#    from /usr/lib/firefox-1.0/defaults/pref/psionnet.js
+#
+# Create ~/.psionnet/manual to stop it changing Firefox's settings.
+D="$HOME/.psionnet"
+mkdir -p "$D"
+ADDR=$(psionnet-find 3 2>/dev/null)
+if [ -n "$ADDR" ]; then
+  echo "$ADDR" > "$D/server"
+elif [ -s "$D/server" ]; then
+  ADDR=$(cat "$D/server")      # the last one seen; Firefox goes direct if it has gone
+fi
+[ -f "$D/manual" ] && exit 0
+if [ -n "$ADDR" ]; then
+  WEB="PROXY $ADDR; DIRECT"; OWN="PROXY $ADDR"
+else
+  WEB="DIRECT"; OWN="DIRECT"
+fi
+cat > "$D/proxy.pac.new" <<PAC
+// Written by psionnet-connect at login. PsionNet, on a Mac on this network,
+// fetches the modern web for Firefox 1.0: secure sites, in pages it can show.
+function FindProxyForURL(url, host) {
+  if (host == "psion" || host == "psionnet")
+    return "$OWN";
+  if (isPlainHostName(host) || shExpMatch(host, "*.local") ||
+      shExpMatch(host, "127.*") || shExpMatch(host, "10.*") ||
+      shExpMatch(host, "192.168.*") || shExpMatch(host, "172.1[6-9].*") ||
+      shExpMatch(host, "172.2[0-9].*") || shExpMatch(host, "172.3[01].*"))
+    return "DIRECT";
+  return "$WEB";
+}
+PAC
+mv "$D/proxy.pac.new" "$D/proxy.pac"
+for P in "$HOME"/.mozilla/firefox/*/; do
+  [ -f "${P}prefs.js" ] || continue
+  U="${P}user.js"
+  grep -v -e '"network.proxy.type"' -e '"network.proxy.autoconfig_url"' "$U" > "$U.new" 2>/dev/null
+  echo 'user_pref("network.proxy.type", 2);' >> "$U.new"
+  echo "user_pref(\"network.proxy.autoconfig_url\", \"file://$D/proxy.pac\");" >> "$U.new"
+  mv "$U.new" "$U"
+done
+exit 0

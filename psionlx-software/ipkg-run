@@ -1,0 +1,40 @@
+#!/bin/sh
+# ipkg-run -- the root half of PsionLX's "Find new software".
+#
+#   ipkg-run install|remove HOST:PORT PACKAGE
+#
+# psionlx-software runs this as root through Psion's gpe-su. It points ipkg
+# at the PsionLX-Software feed, through PsionNet at HOST:PORT, runs it, and
+# writes everything to /tmp/psionlx-software.log, finishing with the line
+# the app reads:  PSIONLX-SOFTWARE-DONE <exit status>
+LOG=/tmp/psionlx-software.log
+ACTION=$1
+SERVER=$2
+PKG=$3
+rm -f "$LOG"
+exec > "$LOG" 2>&1
+fail() { echo "$1"; echo "PSIONLX-SOFTWARE-DONE 1"; exit 1; }
+case "$ACTION" in install|remove) ;; *) fail "Unknown action: $ACTION" ;; esac
+case "$SERVER" in ""|*[!A-Za-z0-9.:-]*) fail "Not a PsionNet address: $SERVER" ;; esac
+case "$PKG" in ""|*[!a-z0-9.+-]*) fail "Not a package name: $PKG" ;; esac
+unset http_proxy HTTP_PROXY      # the feed is on the local network, not the web
+mkdir -p /etc/ipkg
+cat > /etc/ipkg/psionlx-software.conf <<CONF
+# Written by PsionLX's "Find new software": the PsionLX-Software folder of the
+# RetroTechCollection archive, fetched through PsionNet at $SERVER.
+src psionlx-software http://$SERVER/lx/software
+dest root /
+CONF
+if [ "$ACTION" = install ]; then
+  echo "Fetching the list of packages..."
+  ipkg-cl update || fail "Could not fetch the package list through PsionNet at $SERVER."
+  echo "Installing $PKG..."
+  ipkg-cl install "$PKG"            # also updates it, if the feed has a newer one
+else
+  echo "Removing $PKG..."
+  ipkg-cl remove "$PKG"
+fi
+RC=$?
+sync
+killall -HUP gpe-appmgr 2>/dev/null   # Psion's launcher re-reads its programs on SIGHUP
+echo "PSIONLX-SOFTWARE-DONE $RC"
